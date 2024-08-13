@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{/css/index.css}" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+    <script type="text/javascript" th:src="@{/js/index.js}"></script>
+    <title> Home </title>
+</head>
+<body>
+    <!-- Confirmation popup -->
+    <div id="confirmPopup" class="confirm-popup">
+        <div class="confirm-popup-content">
+            <p>Are you sure you want to log out?</p>
+            <button class="confirm">Yes, log out</button>
+            <button class="cancel">Cancel</button>
+        </div>
+    </div>
+    <div class="wrap"></div>
+    <div class="topnav">
+        <a href="/">Home</a>
+        <a href="/user">User management</a>
+        <a href="/job-management">Job management</a>
+        <a href="/candidate-management">Candidate management</a>
+        <a href="/interview-schedule">Interview management</a>
+        <a href="/offer-management">Offer management</a>
+        <span class="profile-trigger">
+            <span th:text="'Hi, ' + ${username}"></span>
+            <img th:src="@{/img/profile-icon.jpg}" alt="Profile">
+            <!-- Profile popup -->
+            <div class="profile-popup" id="profilePopup">
+                <a id="logoutLink" th:href="@{/logout}">Logout</a>
+            </div>
+        </span>
+    </div>
+
+    <div style="padding-left:16px" layout:fragment="content">
+        <!-- Nội dung riêng cho từng trang sẽ được chèn ở đây -->
+        <input type="hidden" id="statusValue" th:value="${status}">
+    </div>
+</body>
+</html>

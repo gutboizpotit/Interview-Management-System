@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{index}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Offer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script th:inline="javascript">
+        var interviewSchedulesByCandidateId = /*[[${interviewSchedulesByCandidateId}]]*/{};
+        interviewSchedulesByCandidateId = JSON.parse(interviewSchedulesByCandidateId);
+        var positions = /*[[${positions}]]*/[];
+    </script>
+    <script type="text/javascript" th:src="@{/js/offer-form.js}"></script>
+    <style>
+        * {
+            font-size: 18px;
+        }
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 1px solid gray;
+            box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+        }
+        .form-group {
+            margin-bottom: 40px;
+            width: 40%;
+        }
+        .form-group label {
+            font-weight: 600;
+        }
+        .error {
+            margin-top: 5px;
+            color: red;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container my-4" layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Offer</h1>
+        <div class="d-flex justify-content-between align-items-center">
+            <span>[[${username}]]</span> <span class="material-icons mx-2">person</span><a href="#">Logout</a>
+        </div>
+    </div>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/offer-management}">OfferList</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Offer</li>
+        </ol>
+    </nav>
+    <div th:if="${success}" class="alert alert-success" role="alert">
+        Offer created successfully! Redirecting to the list page...
+    </div>
+    <div class="p-3">
+        <form id="offer-form" th:action="@{/offer/save-offer}" method="post" th:object="${offer}">
+            <div class="form-container rounded p-4 mb-4">
+                <div class="form-group">
+                    <label for="candidate" class="required">Candidate <span class="text-danger">*</span></label>
+                    <select id="candidate" name="candidateId" class="form-control" required>
+                        <option value="">Select Candidate Name</option>
+                        <option th:each="candidate : ${candidates}" th:value="${candidate.id}" th:text="${candidate.name} + ' (' + ${candidate.email} + ')'"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contract-type" class="required">Contract Type <span class="text-danger">*</span></label>
+                    <select id="contract-type" name="contractType" class="form-control" required>
+                        <option value="">Select a type of contract</option>
+                        <option th:each="contractType : ${contractTypes}" th:value="${contractType}" th:text="${contractType}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="position" class="required">Position <span class="text-danger">*</span></label>
+                    <select id="position" name="position" class="form-control" required>
+                        <option value="">Select a Position</option>
+                        <option th:each="position : ${positions}" th:value="${position}" th:text="${position}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="level" class="required">Level <span class="text-danger">*</span></label>
+                    <select id="level" name="level" class="form-control" required>
+                        <option value="">Select a level</option>
+                        <option th:each="level : ${levels}" th:value="${level}" th:text="${level}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="approver" class="required">Approver <span class="text-danger">*</span></label>
+                    <select id="approver" name="approverId" class="form-control" required>
+                        <option value="">Select an approver</option>
+                        <option th:each="approver : ${approvers}" th:value="${approver.id}" th:text="${approver.username}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="department" class="required">Department <span class="text-danger">*</span></label>
+                    <select id="department" name="department" class="form-control" required>
+                        <option value="">Select a department</option>
+                        <option th:each="department : ${departments}" th:value="${department}" th:text="${department}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="interview-info">Interview Info <span class="text-danger">*</span></label>
+                    <select id="interview-info" name="interviewInfo" class="form-control" required>
+                    </select>
+                    <div id="interviewers-list">Interviewers: </div>
+                </div>
+                <div class="form-group">
+                    <label for="recruiter-owner" class="required">Recruiter Owner <span class="text-danger">*</span></label>
+                    <select id="recruiter-owner" name="recruiterOwnerId" class="form-control" required>
+                        <option value="">Select an recruiter</option>
+                        <option th:each="recruiter : ${recruiters}" th:value="${recruiter.id}" th:text="${recruiter.username}"></option>
+                    </select>
+<!--                    <a href="#" style="font-size: 14px; text-decoration: underline;">Assign to me</a>-->
+                </div>
+                <div class="form-group">
+                    <label class="required">Contract Period <span class="text-danger">*</span></label>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <label for="contract-period-start" style="font-size: 16px">From</label>
+                            <input type="date" id="contract-period-start" name="contractPeriodStart" class="form-control ml-2" required>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <label for="contract-period-end" style="font-size: 16px; margin-left: 5px">To</label>
+                            <input type="date" id="contract-period-end" name="contractPeriodEnd" class="form-control ml-2" required>
+                        </div>
+                    </div>
+                    <div id="contract-period-end-error" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="due-date" class="required">Due Date <span class="text-danger">*</span></label>
+                    <input type="date" id="due-date" name="dueDate" class="form-control" required>
+                    <div id="due-date-error" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="interview-notes">Interview Notes</label>
+                    <textarea id="interview-notes" name="interviewNote" class="form-control" rows="4" readonly></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="basic-salary" class="required">Basic Salary <span class="text-danger">*</span></label>
+                    <input type="text" id="basic-salary" name="basicSalary" class="form-control" required placeholder="Enter basic salary">
+                </div>
+                <div class="form-group">
+                    <label for="note">Note</label>
+                    <textarea id="note" name="note" class="form-control" rows="4" placeholder="Type a note"></textarea>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                <a th:href="@{/offer-management}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{index}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script type="text/javascript" th:src="@{/js/offer.js}"></script>
+    <style>
+        * {
+            font-size: 18px;
+        }
+        .search-bar .form-control, .search-bar .btn {
+            margin-right: 10px;
+        }
+        .search-bar .form-control:last-child, .search-bar .btn:last-child {
+            margin-right: 0;
+        }
+        .actions .material-icons {
+            cursor: pointer;
+        }
+        .actions a {
+            text-decoration: none;
+            color: black;
+        }
+        .table {
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        }
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .popup {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 400px;
+        }
+        .popup button {
+            margin: 0 10px;
+            padding: 8px 16px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .popup button:hover {
+            background-color: #0056b3;
+        }
+        .alert-success {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+    </style>
+</head>
+<body>
+<div class="mt-4" style="padding: 0 100px" layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Offer</h1>
+        <div class="d-flex justify-content-between align-items-center">
+            <span>[[${username}]]</span> <span class="material-icons mx-2">person</span><a href="#">Logout</a>
+        </div>
+    </div>
+    <div id="successAlert" th:if="${successMessage}" class="alert alert-success" role="alert">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <form class="search-bar d-flex mb-2" th:method="get" th:action="@{/offer-management}">
+        <input type="text" name="keyword" class="form-control" placeholder="Search" th:value="${keyword}">
+        <select id="department" name="department" class="form-control">
+            <option value="">Select a department</option>
+            <option th:each="dept : ${departments}" th:value="${dept}" th:text="${dept}" th:selected="${dept == department}"></option>
+        </select>
+        <select id="status" name="status" class="form-control">
+            <option value="">Select a status</option>
+            <option th:each="stat : ${statuses}" th:value="${stat}" th:text="${stat}" th:selected="${stat == status}"></option>
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    <div class="mb-4 d-flex justify-content-end align-items-center">
+        <a th:href="@{/offer/create-offer}" class="btn btn-success mr-3">Add new</a>
+        <button id="exportBtn" class="btn btn-secondary">Export</button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Candidate Name</th>
+                <th>Email</th>
+                <th>Approver</th>
+                <th>Department</th>
+                <th>Notes</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="offer : ${offers}">
+                <td th:text="${offer.candidate.name}"></td>
+                <td th:text="${offer.candidate.email}"></td>
+                <td th:text="${offer.approver.fullName}"></td>
+                <td th:text="${offer.department}"></td>
+                <td th:text="${offer.note}"></td>
+                <td th:text="${offer.status}"></td>
+                <td class="actions">
+                    <a th:href="@{/offer/view/{id}(id=${offer.id})}">
+                        <span class="material-icons mr-2">visibility</span>
+                    </a>
+                    <a th:href="@{/offer/edit/{id}(id=${offer.id})}">
+                        <span class="material-icons">edit</span>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav aria-label="Page navigation" class="d-flex justify-content-center">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/offer-management(page=${currentPage - 1}, keyword=${keyword}, department=${department}, status=${status})}">Previous</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/offer-management(page=${i}, keyword=${keyword}, department=${department}, status=${status})}" th:text="${i + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/offer-management(page=${currentPage + 1}, keyword=${keyword}, department=${department}, status=${status})}">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="exportPopup" class="popup-overlay">
+        <div class="popup">
+            <h5>Export Offer List</h5>
+            <form id="exportForm" th:action="@{/offer/export}" method="post">
+                <div class="form-group">
+                    <label for="dateFrom">From Date:</label>
+                    <input type="date" id="dateFrom" name="dateFrom" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="dateTo">To Date:</label>
+                    <input type="date" id="dateTo" name="dateTo" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Export</button>
+                <button type="button" id="exportCancelBtn" class="btn btn-secondary">Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

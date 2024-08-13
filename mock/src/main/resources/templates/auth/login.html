@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Please Log In</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+    <link th:href="@{/css/toast_message.css}" rel="stylesheet"/>
+    <link th:href="@{/css/login.css}" rel="stylesheet"/>
+    <script type="text/javascript" th:src="@{/js/toast_message.js}"></script>
+</head>
+<body>
+    <div class="wrap"></div>
+    <input id = "status" th:value="${status}" hidden>
+    <input id = "message" th:value="${message}" hidden>
+    <div class="customer-login-form">
+        <div class="column-set">
+            <div class="column1">
+                <form th:action="@{/login}" method="post" class="loginform">
+                    <div th:if="${param.error}" class="message">
+                        Invalid username and password.
+                    </div>
+                    <div class="login_title">
+                        <h1>Login</h1>
+                    </div>
+                    <div class="welcome">
+                        <p>Welcome back! Sign in to your account.</p>
+                    </div>
+                    <div class="username_or_email">
+                        <label for="username">Username or email address *</label>
+                        <input type="text" name="username" id="username">
+                    </div>
+                    <div class="password">
+                        <label for="password">Password *</label>
+                        <input type="password" name="password" id="password">
+                    </div>
+                    <a href="" class="login">
+                        <button>Log in</button>
+                    </a>
+                    <a th:href="@{/reset-password/request}" class="forgot">Forgot your password?</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get the status value from the hidden input
+            const message = document.querySelector(".message").textContent.trim();
+
+            // Call JavaScript functions based on the status value
+            if(message != null) {
+                toast({
+                    status: 0,
+                    message: message
+                });
+            }
+        });
+
+        const status = document.getElementById('status').value;
+        const message = document.getElementById('message').value;
+
+        // Check if status and message are not null or empty
+        if (status && message) {
+            toast({ status: parseInt(status), message: message });
+        }
+    </script>
+</body>
+</html>

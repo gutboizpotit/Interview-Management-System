@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{index}">
+<head>
+    <title>Interview Schedule Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{/js/sendReminderInterview.js}"></script>
+    <style>
+        .card-body {
+            padding: 1.5rem;
+        }
+        .row.mb-3 {
+            margin-bottom: 1rem !important;
+        }
+        .btn-custom {
+            margin-right: 0.5rem;
+        }
+        .btn-equal {
+            width: 150px;
+            font-size: 16px;
+            padding: 8px 12px;
+        }
+         .action-buttons {
+             display: flex;
+             justify-content: flex-end;
+             margin-bottom: 20px;
+         }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            position: fixed;
+            z-index: 1;
+            top: 20px;
+            right: 20px;
+            font-size: 17px;
+            white-space: nowrap;
+            padding: 16px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .toast.success {
+            background-color: #28a745;
+        }
+
+        .toast.error {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content" class="container mt-5">
+    <div id="toast" class="toast" th:if="${message}">
+        <div id= "toast-content" th:text="${message}"></div>
+    </div>
+    <div class="breadcrumb mb-4">
+        <a href="/interview-schedule" class="breadcrumb-item">Interview Schedule List</a>
+        <span class="breadcrumb-item active">New Interview Schedule</span>
+    </div>
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${failMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${failMessage}"></span>
+    </div>
+    <div class="card">
+        <form id="sendReminderForm" th:object="${schedule}" th:action="@{/interview-schedule/send-reminder}" method="post">
+            <input type="hidden" name="id" th:value="${schedule.id}">
+            <div class="action-buttons" th:if="${(userRole == 'ROLE_ADMIN' or userRole == 'ROLE_RECRUITER' or userRole == 'ROLE_MANAGER') and (schedule.status != 'Cancelled' and schedule.status != 'Interviewed') }">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sendReminderModal">Send Reminder</button>
+            </div>
+        </form>
+
+        <div class="modal fade" id="sendReminderModal" tabindex="-1" aria-labelledby="sendReminderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sendReminderModalLabel">Send Reminder</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to send reminder to interviewer and candidate?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="sendReminderButton">Yes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Schedule title:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:text="${schedule.title}">Interview Junior Business Analyst</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Candidate name:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:text="${schedule.candidate.name}">Nguyen Khac Huan</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Schedule Time:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:text="${#dates.format(schedule.scheduleTimeStart, 'dd/MM/yyyy')}">22/02/2022</span>
+                    <span th:text="${#dates.format(schedule.scheduleTimeStart, 'HH:mm')}">From 09:30 am</span>
+                    <span>To</span>
+                    <span th:text="${#dates.format(schedule.scheduleTimeEnd, 'HH:mm')}">10:30 am</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Notes:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:text="${schedule.note}">N/A</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Job:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:text="${schedule.job.title}">Senior BA</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Interviewer:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:each="interviewer, iterStat : ${schedule.interviewers}"
+                          th:text="${interviewer.fullName} + ' (' + ${interviewer.username} + ')' + ${iterStat.count != schedule.interviewers.size() ? ', ' : ''}"></span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Location:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:text="${schedule.location}">Online</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Recruiter owner:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:text="${schedule.recruiterOwner.fullName} + ' (' + ${schedule.recruiterOwner.username} + ')' ">HaLM</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Meeting ID:</strong>
+                </div>
+                <div class="col-md-8">
+                    <a th:href="'https://' + ${schedule.meetLink}" th:text="${schedule.meetLink}">meet.google.com/xyz-hjk-123</a>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Result:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:text="${schedule.result}">N/A</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Status:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:text="${schedule.status}">Open</span>
+                </div>
+            </div>
+            <div th:if="${schedule.status == 'Closed'}" class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Result Note:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span th:text="${schedule.resultNote}">N/A</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Last Updated By:</strong>
+                </div>
+                <div class="col-md-8">
+                    <em th:text="${schedule.updateBy.fullName}">John Doe</em>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Last Updated At:</strong>
+                </div>
+                <div class="col-md-8">
+                    <em th:text="${#dates.format(schedule.updatedAt, 'dd/MM/yyyy HH:mm')}">30/01/2002 10:00</em>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div th:if="${(userRole == 'ROLE_ADMIN' or userRole == 'ROLE_RECRUITER' or userRole == 'ROLE_MANAGER') and (schedule.status != 'Cancelled') and (schedule.status != 'Closed')}" class="btn-custom">
+                    <a href="#" th:href="@{'/interview-schedule/edit-interview-schedule/' + ${schedule.id}}" class="btn btn-warning btn-sm btn-equal" title="Edit">
+                        Edit
+                    </a>
+                </div>
+                <div th:if="${userRole == 'ROLE_INTERVIEWER' and (schedule.status != 'Cancelled') and (schedule.status != 'Closed')}" class="btn-custom">
+                    <a href="#" th:href="@{'/interview-schedule/submit-result/' + ${schedule.id}}" class="btn btn-success btn-sm btn-equal" title="Submit Result">
+                        Submit Result
+                    </a>
+                </div>
+                <button class="btn btn-secondary btn-equal" onclick="window.location.href='/interview-schedule'">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

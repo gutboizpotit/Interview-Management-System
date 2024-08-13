@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{index}">
+<head>
+    <title>Interview Schedule</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{/js/interviewSchedule.js}"></script>
+    <style>
+        .popover-avatar {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            position: fixed;
+            z-index: 1;
+            top: 20px;
+            right: 20px;
+            font-size: 17px;
+            white-space: nowrap;
+            padding: 16px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .toast.success {
+            background-color: #28a745;
+        }
+
+        .toast.error {
+            background-color: #dc3545;
+        }
+
+    </style>
+</head>
+<body>
+<div layout:fragment="content" class="container mt-4">
+    <div id="toast" class="toast" th:if="${message}">
+        <div id="toast-content" th:text="${message}"></div>
+    </div>
+    <h1 class="mb-4">Interview Schedule</h1>
+    <h2 class="mb-3">Interview Schedule List</h2>
+    <div class="search-container d-flex justify-content-between align-items-center mb-3">
+        <div class="input-group w-75">
+            <input type="text" class="form-control" placeholder="Search" id="search">
+            <select class="custom-select" id="filter-interviewer">
+                <option value="">Interviewer</option>
+                <tr th:each="interviewer : ${interviewers}">
+                    <option th:value="${interviewer.id}" th:text="${interviewer.username}">Interviewer</option>
+                </tr>
+            </select>
+            <select class="custom-select" id="filter-status">
+                <option value="">Status</option>
+                <tr th:each="status : ${statuses}">
+                    <option th:value="${status}" th:text="${status}">Status</option>
+                </tr>
+            </select>
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" onclick="search()">Search</button>
+            </div>
+        </div>
+        <div th:if="${userRole == 'ROLE_ADMIN' or userRole == 'ROLE_RECRUITER' or userRole == 'ROLE_MANAGER'}">
+            <button id="add-icon" class="btn btn-primary" onclick="location.href='interview-schedule/add-interview-schedule'">Add new</button>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>Title</th>
+            <th>Candidate Name</th>
+            <th>Interviewers</th>
+            <th>Schedule</th>
+            <th>Result</th>
+            <th>Status</th>
+            <th>Job</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="schedule-table-body">
+        <tr th:each="schedule : ${interviewSchedules}">
+            <td th:data-title="${schedule.title}" th:text="${schedule.title}">Title</td>
+            <td th:data-candidate-name="${schedule.candidate.name}" th:text="${schedule.candidate.name}">Candidate Name</td>
+            <td th:data-interviewers="${schedule.interviewers}">
+                <ul class="list-unstyled">
+                    <li th:each="interviewer : ${schedule.interviewers}" th:data-interviewer-name="${interviewer.username}">
+                        <div
+                           th:data-toggle="popover"
+                           th:data-content="'<div class=&quot;card&quot; style=&quot;width: 18rem;&quot;><img src=&quot;' + @{/img/profile-icon.jpg} +
+                           '&quot; class=&quot;popover-avatar card-img-top&quot; alt=&quot;Avatar&quot;><div class=&quot;card-body&quot;><h5 class=&quot;card-title&quot;>' +
+                           ${interviewer.fullName} + '</h5><p class=&quot;card-text&quot;>Username: ' + ${interviewer.username} +
+                           '</p><p class=&quot;card-text&quot;>Email: ' + ${interviewer.email} + '</p><p class=&quot;card-text&quot;>Department: ' +
+                           ${interviewer.department} + '</p></div></div>'"
+                           th:text="${interviewer.username}"></div>
+                    </li>
+                </ul>
+            </td>
+            <td th:data-schedule-start="${schedule.scheduleTimeStart}" th:data-schedule-end="${schedule.scheduleTimeEnd}"
+                th:text="${#dates.format(schedule.scheduleTimeStart, 'dd/MM/yyyy HH:mm') + ' - ' + #dates.format(schedule.scheduleTimeEnd, 'HH:mm')}"></td>
+            <td th:data-result="${schedule.result}" th:text="${schedule.result}">Result</td>
+            <td th:data-status="${schedule.status}" th:text="${schedule.status}">Status</td>
+            <td th:data-job-title="${schedule.job.title}">
+                <div
+                   th:data-toggle="popover"
+                   th:data-content="'<div class=&quot;popover-job&quot;><h5>' + ${schedule.job.title} + '</h5><p>Level: ' +
+                   ${schedule.job.level} + '</p><p>Skills: ' + ${schedule.job.requiredSkills} + '</p></div>'"
+                   th:text="${schedule.job.title}"></div>
+            </td>
+            <td>
+                <div class="btn-group" role="group">
+                    <a href="#" th:href="@{'interview-schedule/interview-schedule-detail/' + ${schedule.id}}" class="btn btn-info btn-sm" title="View">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <div th:if="${(userRole == 'ROLE_ADMIN' or userRole == 'ROLE_RECRUITER' or userRole == 'ROLE_MANAGER') and (schedule.status != 'Cancelled') and (schedule.status != 'Closed')}">
+                        <a href="#" th:href="@{'interview-schedule/edit-interview-schedule/' + ${schedule.id}}" class="btn btn-warning btn-sm" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                    <div th:if="${userRole == 'ROLE_INTERVIEWER' and (schedule.status != 'Cancelled') and (schedule.status != 'Closed')}">
+                        <a href="#" th:href="@{'interview-schedule/submit-result/' + ${schedule.id}}" class="btn btn-success btn-sm" title="Submit">
+                            <i class="fas fa-check"></i>
+                        </a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{'/interview-schedule?page=' + ${currentPage - 1}}" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{'/interview-schedule?page=' + ${i}}" th:text="${i + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{'/interview-schedule?page=' + ${currentPage + 1}}">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+</body>
+</html>

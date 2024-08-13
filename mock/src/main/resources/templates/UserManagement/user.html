@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link th:href="@{/css/user.css}" rel="stylesheet"/>
+    <link th:href="@{/css/index.css}" rel="stylesheet"/>
+    <link th:href="@{/css/toast_message.css}" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script type="text/javascript" th:src="@{/js/index.js}"></script>
+    <script type="text/javascript" th:src="@{/js/toast_message.js}"></script>
+</head>
+
+<body>
+    <div class="wrap"></div>
+    <input id="status" th:value="${status}" hidden>
+    <input id="message" th:value="${message}" hidden>
+    <!-- Confirmation popup -->
+    <div id="confirmPopup" class="confirm-popup">
+        <div class="confirm-popup-content">
+            <p>Are you sure you want to log out?</p>
+            <button class="confirm">Yes, log out</button>
+            <button class="cancel">Cancel</button>
+        </div>
+    </div>
+    <div class="topnav">
+        <a href="/">Home</a>
+        <a href="/user">User management</a>
+        <a href="/job-management">Job management</a>
+        <a href="/candidate-management">Candidate management</a>
+        <a href="/interview-schedule">Interview management</a>
+        <a href="/offer-management">Offer management</a>
+        <span class="profile-trigger">
+            <span th:text="'Hi, ' + ${username}"></span>
+            <img th:src="@{/img/profile-icon.jpg}" alt="Profile">
+            <!-- Profile popup -->
+            <div class="profile-popup" id="profilePopup">
+                <a id="logoutLink" th:href="@{/logout}">Logout</a>
+            </div>
+        </span>
+    </div>
+    <div class="container">
+        <header>
+            <h1>User Management</h1>
+        </header>
+        <section class="user-list">
+            <div class="search-bar">
+                <form th:action="@{/user}" method="get" class="search-input">
+                    <input th:value="${text}" type="text" name="text" placeholder="Search" class="search-x">
+                    <button type="submit" class="btn btn-primary search-x">Search</button>
+                </form>
+                <select class="role-select">
+                    <option value="Role">Role</option>
+                </select>
+                <div class="creat-user">
+                    <a th:href="@{/user/create}"><i class="fa-solid fa-circle-plus"></i></a>
+                </div>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Phone No.</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th style="text-align: center;">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${userPage.getData()}">
+                    <td th:text="${user.username}">Hoannk</td>
+                    <td><a th:href="'mailto:' + ${user.email}" th:text="${user.email}">hoannk@gmail.com</a></td>
+                    <td th:text="${user.phoneNumber}">012345678</td>
+                    <td th:text="${user.roles.get(0).getName()}">Developer</td>
+                    <td th:text="${user.status}">Activate</td>
+                    <td>
+                            <span class="action-icons">
+                                <div class="user-details">
+                                    <a th:href="@{/user/detail(id=${user.id})}"><i class="fa-solid fa-eye"></i></a>
+                                </div>
+                                <div class="user-update">
+                                    <a th:href="@{/user/edit(id=${user.id})}"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </div>
+                            </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <footer>
+            <div class="next-page">
+                <span th:text="${userPage.getTotalItem() > 10
+                ? userPage.getData().size() + '/10'
+                : userPage.getData().size() + '/' + userPage.getTotalItem()}">
+                0/60 rows
+                </span>
+                <div class="next-round">
+                    <a th:href="@{/user(page=${page - 1})}" th:unless="${page < userPage.getPage() - 1}" class="next round">&#8249;</a>
+                    <a th:href="@{/user(page=${page + 1})}" th:unless="${page > 0}"
+                       class="next round">&#8250;</a>
+                </div>
+
+            </div>
+        </footer>
+    </div>
+    <script>
+        const status = document.getElementById('status').value;
+        const message = document.getElementById('message').value;
+
+        // Check if status and message are not null or empty
+        if (status && message) {
+            toast({status: parseInt(status), message: message});
+        }
+    </script>
+</body>
+
+</html>

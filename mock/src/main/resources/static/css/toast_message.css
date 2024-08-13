@@ -1,0 +1,116 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.signin {
+    display: flex;
+    width: 300px;
+    justify-content: space-between;
+    margin-top: 200px;
+    margin-left: 200px;
+    cursor: pointer;
+}
+
+.shows {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+    min-width: 100px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.shows:hover {
+    opacity: 0.6;
+}
+
+.showsign {
+    background-color: rgb(231, 99, 12);
+    color: #fff;
+}
+
+.showhsign {
+    background-color: rgb(16, 12, 231);
+    color: #fff;
+}
+
+.wrap {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    z-index: 999999;
+}
+
+.alert {
+    min-width: 390px;
+    background-color: #fefcfb;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    padding: 14px;
+    border-left: 4px solid #000;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    animation: slider ease 1.5s , slider2 ease 1s 3s forwards;
+}
+.check-icon {
+    margin-right: 10px;
+}
+
+.content {
+    flex: 1;
+}
+
+.content-head {
+    font-size: 16px;
+}
+
+.content-sub {
+    opacity: 0.6;
+    font-size: 16px;
+}
+
+.close-icon {
+    opacity: 0.5;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+@keyframes slider {
+    from {
+        opacity: 0.5;
+        transform: translateX(calc(100% + 10px + 4px ));
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes slider2 {
+    to {
+        opacity: 0;
+    }
+}
+.alert-signin {
+    border-color: green;
+}
+.alert-unsignin {
+    border-color: red;
+}
+.icon-signin {
+    color: green;
+}
+
+.icon-unsignin {
+    color: red;
+}
+
+.input-invalid {
+    border: 2px solid red; /* Red outline for invalid input */
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Optional: Add a shadow effect */
+}

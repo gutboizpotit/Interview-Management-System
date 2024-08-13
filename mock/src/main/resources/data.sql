@@ -1,0 +1,17 @@
+-- INSERT INTO role (id, description, name)
+-- VALUES (1,  'Role for admin', 'ROLE_ADMIN'),
+--        (2, 'Role for interviewer', 'ROLE_INTERVIEWER'),
+--        (3, 'Role for recruiter', 'ROLE_RECRUITER'),
+--        (4, 'Role for manager', 'ROLE_MANAGER');
+--
+-- INSERT INTO user(id, address, department, dob, email, full_name, gender, note, password, phone_number, status, username, secret)
+-- VALUES (1, 'Ha Noi', 'IT', '2002-06-01', 'haivu@gmail.com', 'Vu Ngoc Hai', 'Male', 'N/A', '$2a$12$DoMYMY91ak1olLqfLTCUQ.UxClyuMwbQWFNMllED94WifO/MAxRn2', '0987654321', 'ACTIVE', 'hai123','test'),
+--        (2, 'Ha Noi', 'IT', '2002-06-01', 'quangthuc321kg@gmail.com', 'Cao Quang Thuc', 'Male', 'N/A', '$2a$12$DoMYMY91ak1olLqfLTCUQ.UxClyuMwbQWFNMllED94WifO/MAxRn2', '0987654321', 'ACTIVE', 'thuc123','test'),
+--        (3, 'Ha Noi', 'IT', '2002-06-01', 'thuanth25@gmail.com', 'Trinh Hung Thuan', 'Male', 'N/A', '$2a$12$DoMYMY91ak1olLqfLTCUQ.UxClyuMwbQWFNMllED94WifO/MAxRn2', '0987654321', 'ACTIVE', 'thuan123','test'),
+--        (4, 'Ha Noi', 'IT', '2002-06-01', 'tranvansong@gmail.com', 'Tran Van Song', 'Male', 'N/A', '$2a$12$DoMYMY91ak1olLqfLTCUQ.UxClyuMwbQWFNMllED94WifO/MAxRn2', '0987654321', 'ACTIVE', 'song123', 'test');
+--
+-- INSERT INTO user_role(user_id, role_id)
+-- VALUES (1,1),
+--        (2,1),
+--        (3,1),
+--        (4,1);

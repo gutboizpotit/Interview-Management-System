@@ -1,0 +1,154 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: 20px auto;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+header {
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    flex-direction: column;
+}
+
+header h1 {
+    margin: 0;
+}
+
+.breadcrumb {
+    font-size: 14px;
+}
+
+.breadcrumb a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.breadcrumb span {
+    color: #555;
+}
+
+.user{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.user-info {
+    text-align: right;
+}
+
+.user-icon a{
+    color: #555;
+}
+
+.user-icon a:hover{
+    color: black;
+}
+
+.username {
+    font-weight: bold;
+}
+.user-info-text{
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.user-info-name{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-right: 10px;
+}
+.department {
+    color: gray;
+}
+
+.user-icon {
+    font-size: 24px;
+    vertical-align: middle;
+}
+
+.logout {
+    margin-left: 15px;
+    text-decoration: none;
+    color: #555;
+    font-weight: bold;
+}
+
+.details-section {
+    padding: 20px 0;
+}
+
+.details-group {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.details-group label {
+    font-weight: bold;
+    width: 20%;
+}
+
+.details-group span {
+    width: 75%;
+    border-bottom: 1px solid #ddd;
+    padding: 5px;
+    color: #555;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.actions .activate {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+
+button {
+    background-color: #ccc;
+    color: #000;
+}
+
+button:hover{
+    background-color: #007bff;
+    color: #fff;
+}

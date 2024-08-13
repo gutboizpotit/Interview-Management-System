@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{index}">
+
+<head>
+    <title>Create candidate</title>
+    <!--    <link th:href="@{/css/jobManagement.css}" rel="stylesheet" />-->
+    <!--    <script type="text/javascript" th:src="@{/js/jobManagement.js}"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+    <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 60%;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .requiredMark {
+            color: red;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0b5ed7;
+        }
+
+        /* Begin Style Create Job */
+        form div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: inline;
+            margin-bottom: 5px;
+        }
+
+        input,
+        textarea {
+
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column label {
+            display:inline;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .column input, .column select, .column span {
+            width: 400px;
+            height: 40px;
+        }
+
+        .column input {
+            border: 1px solid black;
+            border-radius: 5px;
+        }
+
+        .column .notBold {
+            font-weight: normal;
+        }
+
+        .chosen-container-multi .chosen-choices {
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            padding: 6px;
+            width: 400px;
+            height: 40px;
+            border: 1px solid black;
+            background-color: #fff;
+            cursor: text;
+            border-radius: 5px;
+        }
+
+        .chosen-container-multi .chosen-choices li.search-choice {
+            position: relative;
+            margin-right: 2px;
+            padding: 3px 20px 3px 5px;
+            border: 1px solid #aaa;
+            max-width: 100%;
+            border-radius: 3px;
+            background-color: #eee;
+            background-size: 100% 19px;
+            background-repeat: repeat-x;
+            background-clip: padding-box;
+            -webkit-box-shadow: 0 0 2px #fff inset, 0 1px 0 rgba(0, 0, 0, .05);
+            box-shadow: 0 0 2px #fff inset, 0 1px 0 rgba(0, 0, 0, .05);
+            color: #333;
+            line-height: 13px;
+            cursor: default;
+        }
+
+        .chosen-container-single .chosen-single {
+            position: relative;
+            display: block;
+            overflow: hidden;
+            padding: 8px;
+            height: 40px;
+            border: 1px solid black;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #444;
+            text-decoration: none;
+            white-space: nowrap;
+            line-height: 24px;
+        }
+
+
+        .topnav {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .topnav a.active {
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 30px;
+            margin-top: 8px;
+        }
+
+        .profile-trigger img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+
+        .profile-trigger span {
+            margin-right: 4px;
+            color: #fff;
+        }
+
+        .profile-trigger:hover .profile-popup{
+            display: block;
+        }
+
+        .profile-trigger:hover::after{
+            content: "";
+            width: 75%;
+            height: 2px;
+            position: absolute;
+            bottom: -10px;
+            left: 20px;
+            position: absolute;
+            left: 36px;
+            height: 15px;
+        }
+
+        .profile-popup {
+            position: absolute;
+            top: 32px;
+            right: -10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 0px;
+            display: none;
+        }
+
+        .profile-popup a {
+            display: block;
+            color: black;
+            padding: 10px;
+            text-decoration: none;
+        }
+
+        .profile-popup a:hover {
+            background-color: #f2f2f2;
+        }
+
+        .topnav a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Style for confirmation popup */
+        .confirm-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-popup-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .confirm-popup button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .confirm-popup .confirm {
+            background-color: #4caf50;
+            color: #fff;
+        }
+
+        .confirm-popup .cancel {
+            background-color: #f44336;
+            color: #fff;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="topnav">
+    <a href="/">Home</a>
+    <a href="/user">User management</a>
+    <a href="/job-management">Job management</a>
+    <a href="/candidate-management">Candidate management</a>
+    <a href="/interview-schedule">Interview management</a>
+    <a href="/offer-management">Offer management</a>
+    <span class="profile-trigger">
+        <span th:text="'Hi, ' + ${username}"></span>
+        <img th:src="@{/img/profile-icon.jpg}" alt="Profile">
+        <!-- Profile popup -->
+        <div class="profile-popup" id="profilePopup">
+            <a id="logoutLink" th:href="@{/logout}">Logout</a>
+        </div>
+    </span>
+</div>
+
+<div layout:fragment="content" class="container">
+    <header>
+        <h1 style="margin: 5px 0px">Create candidate</h1>
+    </header>
+
+    <div style="margin: 10px 0; border-bottom: 2px solid #ddd; padding-bottom: 10px">
+        <a style="color: blue" href="/candidate-management">Candidate List</a>
+        <span> / </span>
+        <a style="color: blue" href="#">Create candidate</a>
+    </div>
+    <!--        <form th:action="@{/job-management/create-job}" th:object="${job}" method="post">-->
+    <form th:action="@{/candidate-management/create-candidate}" th:object="${candidate}" method="post">
+        <h3 style="margin: 15px 0px">I. Personal information</h3>
+        <div class="row">
+            <div class="column">
+                <label>Full name<span class="requiredMark"> *</span></label>
+                <input type="text" th:field="*{name}" placeholder="Type a name..." required>
+            </div>
+            <div class="column">
+                <label>Email<span class="requiredMark"> *</span></label>
+                <input type="text" th:field="*{email}" placeholder="Type an email..." required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="column">
+                <label>D.O.B<span class="requiredMark"> *</span></label>
+                <input type="date" th:field="*{dob}" required>
+            </div>
+            <div class="column">
+                <label>Address</label>
+                <input type="text" th:field="*{address}" placeholder="Type an address">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="column" style="margin-bottom: 0px">
+                <label>Phone number</label>
+                <input type="text" th:field="*{phone}" placeholder="Type a phone number">
+            </div>
+            <div class="column" style="margin-bottom: 0px">
+                <label>Gender<span class="requiredMark"> *</span></label>
+                <select th:field="*{gender}" class="chosen-select" required>
+                    <option value="">Select a gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+        </div>
+
+        <h3 style="margin: 15px 0px">II. Professional information</h3>
+        <div class="row">
+            <div class="column">
+                <label>CV attachment</label>
+                <input type="file" th:field="*{CV}" placeholder="Select CV">
+            </div>
+            <div class="column">
+                <label>Note</label>
+                <input type="text" th:field="*{note}" placeholder="Type a note">
+            </div>
+        </div>
+        <div class="row">
+            <div class="column" style="margin-bottom: 0px">
+                <label>Position<span class="requiredMark"> *</span></label>
+                <select th:field="*{position}" class="chosen-select" required>
+                    <option value="">Select a postion</option>
+                    <option value="Backend Developer">Backend Developer</option>
+                    <option value="Business Analyst">Business Analyst</option>
+                    <option value="Tester">Tester</option>
+                    <option value="HR">HR</option>
+                    <option value="Project manager">Project manager</option>
+                    <option value="Not available">Not available</option>
+                    <!-- positions=Backend Developer, Business Analyst, Tester, HR, Project manager, Not available -->
+                </select>
+            </div>
+            <div class="column" style="margin-bottom: 0px">
+                <label>Status<span class="requiredMark"> *</span></label>
+                <select th:field="*{status}" class="chosen-select" required>
+                    <option value="Open">Open</option>
+                    <option value="Banned">Banned</option>
+                    <!-- candidate status=Open, Banned -->
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="column" style="margin-bottom: 0px">
+                <label>Skills<span class="requiredMark"> *</span></label>
+                <select th:field="*{skills}" data-placeholder="Select skills" class="chosen-select" multiple required>
+                    <option value="Java">Java</option>
+                    <option value="Nodejs">Nodejs</option>
+                    <option value=".net">.net</option>
+                    <option value="C++">C++</option>
+                    <option value="Business analysis">Business analysis</option>
+                    <option value="Communication">Communication</option>
+                </select>
+                <!--            skills=Java, Nodejs, .net, C++, Business analysis, Communication-->
+            </div>
+            <div class="column" style="margin-bottom: 0px">
+                <label>Year of Experience</label>
+                <input type="number" th:field="*{yearOfExperience}" placeholder="Type a number">
+            </div>
+        </div>
+
+        <div class="row" style="margin: 0">
+            <div class="column" style="margin-bottom: 0px">
+                <label>Recruiter<span class="requiredMark"> *</span></label>
+                <select th:field="*{recruiter}" class="chosen-select" required>
+                    <option value="">Recuiter username</option>
+                    <option th:each="recruiter : ${recruiters}" th:value="${recruiter.id}" th:text="${recruiter.username}"></option>
+                </select>
+                <!--                <a href="#" id="assignMe" style="text-decoration: underline;">Assign me</a>-->
+            </div>
+            <div class="column" style="margin-bottom: 0px">
+                <label>Highest level<span class="requiredMark"> *</span></label>
+                <select th:field="*{highestLevel}" class="chosen-select" required>
+                    <option value="">Select a highest level</option>
+                    <option value="High school">High school</option>
+                    <option value="Bachelor's Degree">Bachelor's Degree</option>
+                    <option value="Master Degree">Master Degree</option>
+                    <option value="PhD">PhD</option>
+                    <!--                highestLevels=High school, Bachelor?s Degree, Master Degree, PhD-->
+                </select>
+            </div>
+        </div>
+
+        <h3 style="margin: 15px 0px">III. Apply for a job</h3>
+        <div class="row">
+            <div class="column">
+                <label for="jobSelect">Select a Job<span class="requiredMark">*</span></label>
+                <select id="jobSelect" name="jobId" class="chosen-select" required>
+                    <option value="">Select a job </option>
+                    <option th:each="job : ${jobs}" th:value="${job.id}" th:text="${job.title}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="action-button" style="text-align: center">
+            <button type="submit">Submit</button>
+            <button type="button" onclick="window.location.href='/candidate-management'">Cancel</button>
+        </div>
+
+    </form>
+    <script>
+        $(".chosen-select").chosen({
+            no_results_text: "Nothing found!"
+        })
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const assignMeLink = document.getElementById('assignMe');
+            const recruiterSelect = document.querySelector('select[name="recruiter"]');
+            // Suppose currentUserId is available either from backend or stored somewhere accessible
+            const currentUserId = '{{ currentUser.id }}';  // Using Thymeleaf syntax as example
+
+            assignMeLink.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default link action
+                recruiterSelect.value = currentUserId;
+                $('.chosen-select').trigger('chosen:updated');  // Update Chosen dropdown
+            });
+
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function (event) {
+                const email = document.querySelector('input[name="email"]').value;
+                const emailRegex = /^[\w\-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+                if(!emailRegex.test(email)) {
+                    alert("Invalid email address");
+                    event.preventDefault();
+                }
+
+                const dob = document.querySelector('input[name="dob"]').value;
+                const currentDate = new Date().toISOString().split('T')[0]
+                if (new Date(dob) >= new Date(currentDate)) {
+                    alert('Date of Birth must be in the past');
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

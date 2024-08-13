@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{index}">
+<head>
+    <title>Job details</title>
+    <link th:href="@{/css/jobManagement.css}" rel="stylesheet" />
+    <script type="text/javascript" th:src="@{/js/jobManagement.js}"></script>
+</head>
+<body>
+
+<div class="topnav">
+    <a href="/">Home</a>
+    <a href="/user">User management</a>
+    <a href="/job-management">Job management</a>
+    <a href="/candidate-management">Candidate management</a>
+    <a href="/interview-schedule">Interview management</a>
+    <a href="/offer-management">Offer management</a>
+    <span class="profile-trigger">
+        <span th:text="'Hi, ' + ${username}"></span>
+        <img th:src="@{/img/profile-icon.jpg}" alt="Profile">
+        <!-- Profile popup -->
+        <div class="profile-popup" id="profilePopup">
+            <a id="logoutLink" th:href="@{/logout}">Logout</a>
+        </div>
+    </span>
+</div>
+
+<div layout:fragment="content" class="container-60">
+    <header>
+        <h1 style="margin: 5px 0px; color: black">Job details</h1>
+    </header>
+    <div style="margin: 10px 0; border-bottom: 2px solid #ddd; padding-bottom: 10px">
+        <a style="color: blue" href="/job-management">Job List</a>
+        <span> / </span>
+        <a style="color: blue" href="#">Job details</a>
+    </div>
+
+    <div class="row" style="margin-top: 10px">
+        <div class="column">
+            <label>Job title</label>
+            <span th:text="${jobDetails.title}"></span>
+        </div>
+        <div class="column">
+            <label>Skills</label>
+            <span th:text="${jobDetails.requiredSkills}"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <label>Start Date</label>
+            <!--            <span th:text="${jobDetails.startDate}"></span>-->
+            <span th:text="${#dates.format(jobDetails.startDate, 'dd/MM/yyyy')}"></span>
+        </div>
+        <div class="column">
+            <label>End Date</label>
+            <!--            <span th:text="${jobDetails.endDate}"></span>-->
+            <span th:text="${#dates.format(jobDetails.endDate, 'dd/MM/yyyy')}"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <label>Salary Range From</label>
+            <span th:text="${#numbers.formatDecimal(jobDetails.salaryRangeFrom, 1, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+        </div>
+        <div class="column">
+            <label>Salary Range To</label>
+            <span th:text="${#numbers.formatDecimal(jobDetails.salaryRangeTo, 1, 'COMMA', 0, 'POINT')} + ' VND'"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <label>Level</label>
+            <span th:text="${jobDetails.level}"></span>
+        </div>
+        <div class="column">
+            <label>Benefits</label>
+            <span th:text="${jobDetails.benefits}"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <label>Working address</label>
+            <span th:text="${jobDetails.workingAddress}"></span>
+        </div>
+        <div class="column">
+            <label>Status</label>
+            <span th:text="${jobDetails.status}"></span>
+        </div>
+    </div>
+
+    <div class="column" style="margin-bottom: 15px">
+        <label>Description</label>
+        <span th:text="${jobDetails.description}"></span>
+    </div>
+    <div style="text-align: center">
+        <!--            <button type="button" onclick="window.location.href='/job-management/edit/{id}(id=${job.id})'">Edit</button>-->
+        <a th:if="${userRole == 'ROLE_ADMIN' or userRole == 'ROLE_RECRUITER' or userRole == 'ROLE_MANAGER'}" th:href="@{/job-management/edit/{id}(id=${jobDetails.id})}"><button>Edit</button></a>
+        <a th:if="${userRole == 'ROLE_INTERVIEWER' and jobDetails.status=='Open'}" th:href="@{/candidate-management/create-candidate}"><button>Apply</button></a>
+        <button type="button" onclick="window.location.href='/job-management'">Cancel</button>
+    </div>
+</div>
+</body>
+</html>
